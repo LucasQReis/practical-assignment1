@@ -1,0 +1,55 @@
+{
+  "name": "stranger-things-s5-finale-sentiment",
+  "title": "Stranger Things Season 5 Finale: Sentiment and Fan Theories",
+  "description": "A collection of 74 Reddit-sourced discussions and AI-analyzed sentiments regarding the series finale of Stranger Things. Includes intensity scores, key emotions, and structured fan theories.",
+  "homepage": "https://wwww.kaggle.com/datasets",
+  "licenses": [
+    {
+      "name": "ODC-PDDL-1.0",
+      "path": "http://opendatacommons.org/licenses/pddl/",
+      "title": "Open Data Commons Public Domain Dedication and License"
+    }
+  ],
+  "keywords": [
+    "Stranger Things",
+    "Sentiment Analysis",
+    "NLP",
+    "Reddit",
+    "Fan Theories",
+    "Television",
+    "Entertainment"
+  ],
+  "resources": [
+    {
+      "name": "finale_week1",
+      "path": "finale_week1.json",
+      "format": "json",
+      "mediatype": "application/json",
+      "encoding": "utf-8",
+      "schema": {
+        "fields": [
+          {
+            "name": "fan_theories",
+            "type": "array",
+            "description": "List of structured theories including title, theory description, and plausibility score."
+          },
+          {
+            "name": "discussions",
+            "type": "array",
+            "description": "Aggregated Reddit threads with embedded sentiment analysis (sentiment, intensity, emotion) and thematic tags."
+          },
+          {
+            "name": "sentiment_summary",
+            "type": "object",
+            "description": "The count of positive vs mixed sentiments found in the crawl."
+          },
+          {
+            "name": "metadata",
+            "type": "object",
+            "description": "Crawl date, total sources, and model used for analysis."
+          }
+        ]
+      }
+    }
+  ]
+}
