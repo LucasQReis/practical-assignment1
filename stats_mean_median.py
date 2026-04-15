@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv("cleaned_dataset_final.csv")
+df = pd.read_csv("dataset_limpo/cleaned_dataset_final.csv")
 
 cols_sentimento = [
     "intensity_clean",
@@ -55,4 +55,3 @@ for grupo in stats_df["grupo"].unique():
     print(subset.to_string(index=False))
 
 stats_df.to_csv("stats_mean_median.csv", index=False)
-print("\n✅ Exportado: stats_mean_median.csv")
