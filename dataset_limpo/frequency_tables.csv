@@ -1,0 +1,58 @@
+### sentiment_clean
+sentiment_clean,fi (absoluta),fri (%) (relativa),Fi (acumulada),Fri (%) (acum. rel.)
+positive,92,49.2,92,49.2
+negative,58,31.02,150,80.21
+mixed,37,19.79,187,100.0
+
+### emotion_group_v2
+emotion_group_v2,fi (absoluta),fri (%) (relativa),Fi (acumulada),Fri (%) (acum. rel.)
+frustration,46,24.6,46,24.6
+excitement,42,22.46,88,47.06
+other,29,15.51,117,62.57
+disappointment,27,14.44,144,77.01
+appreciation,14,7.49,158,84.49
+curiosity,11,5.88,169,90.37
+nostalgia,10,5.35,179,95.72
+humor,4,2.14,183,97.86
+skepticism,4,2.14,187,100.0
+
+### _source_file
+_source_file,fi (absoluta),fri (%) (relativa),Fi (acumulada),Fri (%) (acum. rel.)
+day1,70,37.43,70,37.43
+week1,61,32.62,131,70.05
+day3,56,29.95,187,100.0
+
+### themes
+tema,fi (presentes),fri (%) (presentes)
+character_development,173,92.51
+nostalgia,150,80.21
+plot_elements,144,77.01
+relationships,122,65.24
+theories,81,43.32
+cinematography,21,11.23
+music,8,4.28
+
+### engagement_binned
+engagement_bin,fi (absoluta),fri (%) (relativa),Fi (acumulada),Fri (%) (acum. rel.)
+[4-5),100,53.48,100,53.48
+[3-4),46,24.6,146,78.07
+[5-6),39,20.86,185,98.93
+[0-3),1,0.53,186,99.47
+[6-10],1,0.53,187,100.0
+
+### intensity_binned
+intensity_bin,fi (absoluta),fri (%) (relativa),Fi (acumulada),Fri (%) (acum. rel.)
+alta [7-8),59,31.55,59,31.55
+media [6-7),53,28.34,112,59.89
+muito alta [8-10],49,26.2,161,86.1
+media-baixa [5-6),23,12.3,184,98.4
+baixa [0-5),3,1.6,187,100.0
+
+### summary_binned
+summary_length_bin,fi (absoluta),fri (%) (relativa),Fi (acumulada),Fri (%) (acum. rel.)
+muito longo [80+),93,49.73,93,49.73
+curtissimo [0-20),36,19.25,129,68.98
+medio [40-60),27,14.44,156,83.42
+longo [60-80),19,10.16,175,93.58
+curto [20-40),12,6.42,187,100.0
+

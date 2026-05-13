@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Editores / IDE
+.vscode/
+.idea/
+
+# Claude Code (sessao local)
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db

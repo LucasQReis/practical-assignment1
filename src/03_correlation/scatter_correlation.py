@@ -1,9 +1,14 @@
+import os
+from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
+
+# Bootstrap: roda a partir da raiz do projeto independente do cwd
+os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")
 
@@ -61,6 +66,7 @@ for i, (xcol, ycol, title, corr_type) in enumerate(pairs):
 
     r_p, pval_p = stats.pearsonr(x_clean, y_clean)
     r_s, pval_s = stats.spearmanr(x_clean, y_clean)
+    r_k, pval_k = stats.kendalltau(x_clean, y_clean)
 
     coef = np.polyfit(x_clean, y_clean, 1)
     trend = np.poly1d(coef)
@@ -91,14 +97,35 @@ for i, (xcol, ycol, title, corr_type) in enumerate(pairs):
     ax.grid(color="#e8e8e8", linewidth=0.6, zorder=0)
     ax.set_axisbelow(True)
 
-    use_spearman = (var_types.get(xcol) == "O" or var_types.get(ycol) == "O")
-    rec = "Spearman" if use_spearman else "Pearson"
+    # Recomendacao por tipo de dado + tamanho amostral (Lecture 7 slide):
+    # - Pearson: continua + linear + normal
+    # - Spearman: ordinal/monotonica
+    # - Kendall: recomendado para n < 100 (resistente a outliers)
+    is_ordinal = (var_types.get(xcol) == "O" or var_types.get(ycol) == "O")
+    n_small    = len(x_clean) < 100
+    if n_small and is_ordinal:
+        rec = "Kendall (n<100, ordinal)"
+    elif is_ordinal:
+        rec = "Spearman (ordinal)"
+    elif n_small:
+        rec = "Kendall (n<100)"
+    else:
+        rec = "Pearson (linear + n>=100)"
 
-    sig_p = "***" if pval_p < 0.001 else ("**" if pval_p < 0.01 else ("*" if pval_p < 0.05 else "ns"))
-    sig_s = "***" if pval_s < 0.001 else ("**" if pval_s < 0.01 else ("*" if pval_s < 0.05 else "ns"))
+    def sig(p):
+        return "***" if p < 0.001 else ("**" if p < 0.01 else ("*" if p < 0.05 else "ns"))
 
-    info = (f"r Pearson = {r_p:+.2f} {sig_p}\n"
-            f"rho Spearman = {r_s:+.2f} {sig_s}\n"
+    # Classificacao de forca conforme Lecture 7 "Strength of Correlation"
+    def strength(r):
+        a = abs(r)
+        if a >= 0.7: return "strong"
+        if a >= 0.4: return "moderate"
+        if a >= 0.2: return "weak"
+        return "none"
+
+    info = (f"r Pearson  = {r_p:+.2f} {sig(pval_p)}  [{strength(r_p)}]\n"
+            f"rho Spearm = {r_s:+.2f} {sig(pval_s)}  [{strength(r_s)}]\n"
+            f"tau Kendall= {r_k:+.2f} {sig(pval_k)}  [{strength(r_k)}]\n"
             f"Tipo: {corr_type}\n"
             f"Recomendado: {rec}")
     ax.text(0.98, 0.04, info, transform=ax.transAxes,
@@ -171,11 +198,12 @@ labels_heat = [
 
 corr_pearson  = df[cols_heat].corr(method="pearson")
 corr_spearman = df[cols_heat].corr(method="spearman")
+corr_kendall  = df[cols_heat].corr(method="kendall")
 
 cmap = LinearSegmentedColormap.from_list(
     "bwr_custom", ["#378ADD", "#ffffff", "#E24B4A"], N=256)
 
-fig2, (ax1, ax2) = plt.subplots(1, 2, figsize=(22, 9))
+fig2, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(28, 9))
 
 
 def draw_heatmap(ax, corr_matrix, title, labels):
@@ -216,15 +244,20 @@ def draw_heatmap(ax, corr_matrix, title, labels):
 
 im1 = draw_heatmap(
     ax1, corr_pearson,
-    "Pearson r\n(assume linearidade e normalidade — adequado para (C))",
+    "Pearson r\n(linear, normal, sensivel a outliers - p/ (C))",
     labels_heat)
 
 im2 = draw_heatmap(
     ax2, corr_spearman,
-    "Spearman rho\n(nao-parametrico, robusto a outliers — adequado para (O) e nao-normais)",
+    "Spearman rho\n(monotonica, sem assuncao distribucional - p/ (O))",
     labels_heat)
 
-cbar = fig2.colorbar(im2, ax=[ax1, ax2], fraction=0.018, pad=0.02)
+im3 = draw_heatmap(
+    ax3, corr_kendall,
+    "Kendall tau\n(monotonica, robusto a outliers, ideal n<100)",
+    labels_heat)
+
+cbar = fig2.colorbar(im3, ax=[ax1, ax2, ax3], fraction=0.014, pad=0.02)
 cbar.set_label("Coeficiente de correlacao", fontsize=10)
 cbar.ax.tick_params(labelsize=9)
 
@@ -232,16 +265,15 @@ note = (
     "(C) = variavel continua   |   (O) = variavel ordinal   |   "
     "Borda amarela = multicolinearidade (|r| >= 0.70)   |   "
     "Linha pontilhada = separacao C / O\n"
-    "Atencao: correlacao nao implica causalidade. "
-    "Variaveis intervenientes (ex.: tipo de plataforma, hora do post) "
-    "podem explicar as associacoes observadas."
+    "Forca: |r|>=0.7 strong  |  0.4-0.7 moderate  |  0.2-0.4 weak  |  <0.2 none. "
+    "Correlacao != causalidade - variaveis intervenientes (sentimento, fonte) podem mediar associacoes."
 )
 fig2.text(0.5, -0.04, note, ha="center", fontsize=9, color="#444",
           bbox=dict(boxstyle="round,pad=0.5", facecolor="#f9f9f9",
                     edgecolor="#cccccc", alpha=0.95))
 
 fig2.suptitle(
-    "Heatmap de Correlacao — Pearson vs Spearman\n"
+    "Heatmap de Correlacao - Pearson | Spearman | Kendall\n"
     "Stranger Things S5 Finale Dataset",
     fontsize=14, fontweight="bold", y=1.03)
 

@@ -1,6 +1,12 @@
+"""Selecao de colunas finais do dataset enriquecido."""
+import os
+from pathlib import Path
 import pandas as pd
 
-df = pd.read_csv("cleaned_dataset_enriched.csv")
+# Bootstrap: roda a partir da raiz do projeto independente do cwd
+os.chdir(Path(__file__).resolve().parents[2])
+
+df = pd.read_csv("dataset_limpo/cleaned_dataset_enriched.csv")
 
 print(f"Shape original: {df.shape}")
 
@@ -31,10 +37,15 @@ keep = [
     "theme_music",
     "engagement_score",
     "summary_length",
+    "published_hour",
+    "published_dayofweek",
+    "published_month",
+    "days_since_first_post",
+    "crawl_lag_hours",
 ]
 
 df_final = df[keep]
-
 removed = len(df.columns) - len(keep)
+print(f"Colunas removidas: {removed}  |  Shape final: {df_final.shape}")
 
-df_final.to_csv("cleaned_dataset_final.csv", index=False)
+df_final.to_csv("dataset_limpo/cleaned_dataset_final.csv", index=False)
