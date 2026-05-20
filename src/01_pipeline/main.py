@@ -1,25 +1,10 @@
-"""
-Stranger Things S5 Finale - Pipeline de Preparacao de Dados
-Estruturado conforme Lecture 6 (EDA): Steps 1 a 7.
-"""
-
 import os
 import json
 import re
 import pandas as pd
 from pathlib import Path
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
-
-# =========================================================
-# Step 1: Consolidacao dos arquivos de origem (JSON)
-# Analogo a 'CSV File Consolidation' do notebook ANCINE.
-# Usa generator para nao carregar todos os arquivos em RAM.
-# =========================================================
-print("=" * 60)
-print("Step 1: Consolidacao das fontes JSON")
-print("=" * 60)
 
 dataset_dir = Path("dataset")
 file_labels = {
@@ -41,54 +26,24 @@ for fname, label in file_labels.items():
     all_discussions.extend(load_discussions(dataset_dir / fname, label))
 
 df = pd.json_normalize(all_discussions)
-print(f"Dimensoes consolidadas: {df.shape}")
-
-# =========================================================
-# Step 2: Export em Parquet (preservacao de schema + I/O eficiente)
-# Snappy compression conforme recomendado no notebook ANCINE.
-# =========================================================
-print("\n" + "=" * 60)
-print("Step 2: Export Parquet (schema-preserving)")
-print("=" * 60)
-
 out_dir = Path("dataset_limpo")
 out_dir.mkdir(exist_ok=True)
 
 try:
     parquet_path = out_dir / "discussions_raw.parquet"
     df.to_parquet(parquet_path, engine="pyarrow", compression="snappy", index=False)
-    print(f"Parquet salvo em: {parquet_path}")
 except Exception as e:
-    print(f"[aviso] export Parquet falhou ({e}); seguindo apenas com CSV.")
-
-# =========================================================
-# Step 3: Verificacao de duplicatas
-# Reflexao: duplicatas podem vir de janelas temporais sobrepostas (day1/day3/week1).
-# =========================================================
-print("\n" + "=" * 60)
-print("Step 3: Verificacao de duplicatas")
-print("=" * 60)
+    print(f"({e})")
 
 duplicate_mask = df.duplicated(subset=["url"])
 total_dup = int(duplicate_mask.sum())
 pct_dup = (total_dup / len(df)) * 100
-print(f"Duplicatas por URL: {total_dup}  ({pct_dup:.2f}% do total)")
 
 if total_dup > 0:
     df_dups = df[df.duplicated(subset=["url"], keep=False)].sort_values("url")
     df_dups.to_csv(out_dir / "duplicates_dataset.csv", index=False)
-    print(f"Amostra de duplicatas salva em: {out_dir / 'duplicates_dataset.csv'}")
 
 df_clean = df.drop_duplicates(subset=["url"], keep="first").copy()
-print(f"Apos deduplicacao: {df_clean.shape}")
-
-# =========================================================
-# Step 4: Type casting / Parsing temporal
-# Datas em ISO 8601 -> datetime64[ns]; coerce para NaT em falha.
-# =========================================================
-print("\n" + "=" * 60)
-print("Step 4: Parsing temporal (object -> datetime64[ns])")
-print("=" * 60)
 
 df_clean["published_dt"] = pd.to_datetime(
     df_clean["published"], utc=True, errors="coerce"
@@ -97,10 +52,6 @@ df_clean["timestamp_dt"] = pd.to_datetime(
     df_clean["timestamp"], utc=True, errors="coerce"
 )
 
-print("Tipos apos parsing:")
-print(df_clean[["published_dt", "timestamp_dt"]].dtypes)
-
-# Features temporais derivadas
 df_clean["published_hour"]      = df_clean["published_dt"].dt.hour
 df_clean["published_dayofweek"] = df_clean["published_dt"].dt.dayofweek
 df_clean["published_month"]     = df_clean["published_dt"].dt.month
@@ -111,14 +62,6 @@ df_clean["crawl_lag_hours"] = (
     (df_clean["timestamp_dt"] - df_clean["published_dt"])
     .dt.total_seconds().div(3600).round(1)
 )
-
-# =========================================================
-# Feature engineering - extracao de campos aninhados
-# (sentimento, intensidade, emocao, teorias, temas)
-# =========================================================
-print("\n" + "=" * 60)
-print("Feature engineering: extracao de campos aninhados")
-print("=" * 60)
 
 def extract_sentiment(row):
     sentiment = row.get("analysis.sentiment.sentiment")
@@ -265,14 +208,6 @@ df_clean["engagement_score"] = (
     + df_clean["num_themes"].clip(upper=5) * 0.2
 ).round(2)
 
-# =========================================================
-# Step 5: Diagnostico de esparsidade (mapeamento de NaN)
-# Tabela com total e proporcao percentual, ordenada.
-# =========================================================
-print("\n" + "=" * 60)
-print("Step 5: Diagnostico de esparsidade")
-print("=" * 60)
-
 null_counts = df_clean.isna().sum()
 cols_with_nulls = null_counts[null_counts > 0]
 
@@ -285,23 +220,6 @@ if not cols_with_nulls.empty:
 else:
     print("Integridade maxima: sem NaN detectados.")
 
-# =========================================================
-# Step 6: Diagnostico estrutural (RAM footprint)
-# info(memory_usage='deep') inspeciona o tamanho real de strings.
-# =========================================================
-print("\n" + "=" * 60)
-print("Step 6: Diagnostico estrutural (info / memory deep)")
-print("=" * 60)
 df_clean.info(memory_usage="deep")
-
-# =========================================================
-# Persistencia
-# Notas: a imputacao baseada em dominio (Step "domain-based imputation"
-# do notebook ANCINE) ocorre em dataset_impv.py por modularidade.
-# A otimizacao de memoria (Step 7) tambem fica em dataset_impv.py,
-# apos as imputacoes, para downcast efetivo de inteiros que sairam de NaN.
-# =========================================================
 out_csv = "dataset_limpo/cleaned_dataset_enriched.csv"
 df_clean.to_csv(out_csv, index=False)
-print(f"\nDataset enriquecido salvo em: {out_csv}")
-print(f"Dimensoes finais: {df_clean.shape}")

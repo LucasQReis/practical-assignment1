@@ -4,7 +4,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")

@@ -7,7 +7,6 @@ import matplotlib.patches as mpatches
 from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")
@@ -97,10 +96,6 @@ for i, (xcol, ycol, title, corr_type) in enumerate(pairs):
     ax.grid(color="#e8e8e8", linewidth=0.6, zorder=0)
     ax.set_axisbelow(True)
 
-    # Recomendacao por tipo de dado + tamanho amostral (Lecture 7 slide):
-    # - Pearson: continua + linear + normal
-    # - Spearman: ordinal/monotonica
-    # - Kendall: recomendado para n < 100 (resistente a outliers)
     is_ordinal = (var_types.get(xcol) == "O" or var_types.get(ycol) == "O")
     n_small    = len(x_clean) < 100
     if n_small and is_ordinal:
@@ -115,7 +110,6 @@ for i, (xcol, ycol, title, corr_type) in enumerate(pairs):
     def sig(p):
         return "***" if p < 0.001 else ("**" if p < 0.01 else ("*" if p < 0.05 else "ns"))
 
-    # Classificacao de forca conforme Lecture 7 "Strength of Correlation"
     def strength(r):
         a = abs(r)
         if a >= 0.7: return "strong"

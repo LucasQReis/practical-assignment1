@@ -1,34 +1,13 @@
-"""
-Step 6 (imputacao baseada em dominio) + Step 7 (otimizacao de memoria).
-Alinhado a Lecture 6 / notebook ANCINE.
-"""
-
 import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_final.csv")
 
-print("=" * 60)
-print("Diagnostico inicial de NaN antes da imputacao")
-print("=" * 60)
 null_counts = df.isna().sum()
-print(null_counts[null_counts > 0].to_string())
-
-# =========================================================
-# Step 6: Imputacao baseada em dominio
-# - intensity_clean: mapa (sentimento, emocao) com fallback por sentimento
-# - emotion_group "other": remapeada via dicionario auxiliar
-# - plausibility: 0 se sem teoria, mediana (7) se com teoria sem score
-# Cada decisao e justificada pela semantica da variavel.
-# =========================================================
-print("\n" + "=" * 60)
-print("Step 6: Imputacao baseada em dominio")
-print("=" * 60)
 
 intensity_map = {
     ("positive", "excitement"):     8,
@@ -147,21 +126,6 @@ melhorias = [
 for col, nans, nota in melhorias:
     print(f"  {col:<35} NaN={nans}  |  {nota}")
 
-print(f"\n  Outliers (IQR 1.5x) no engagement_score_v2: {n_outliers}")
-
-# =========================================================
-# Step 7: Otimizacao de memoria
-# - category: hash-map para strings de baixa cardinalidade
-# - downcast: inteiros para o menor tipo possivel
-# Reduz RAM em ate ~90% conforme demonstrado no notebook ANCINE.
-# =========================================================
-print("\n" + "=" * 60)
-print("Step 7: Otimizacao de memoria (category + downcast)")
-print("=" * 60)
-
-print("Antes:")
-print(f"  Memoria deep: {df.memory_usage(deep=True).sum() / 1024:.2f} KB")
-
 categorical_cols = [
     "sentiment_clean", "sentiment_polarity",
     "emotion_group", "emotion_group_v2", "key_emotion_raw",
@@ -192,15 +156,5 @@ for col in float_cols:
     if col in df.columns:
         df[col] = pd.to_numeric(df[col], downcast="float")
 
-print("\nDepois:")
-print(f"  Memoria deep: {df.memory_usage(deep=True).sum() / 1024:.2f} KB")
-
-print("\nTipos apos otimizacao:")
-print(df.dtypes.value_counts().to_string())
-
-# =========================================================
-# Persistencia
-# =========================================================
 out_csv = "dataset_limpo/cleaned_dataset_improved.csv"
 df.to_csv(out_csv, index=False)
-print(f"\nDataset melhorado salvo em: {out_csv}")

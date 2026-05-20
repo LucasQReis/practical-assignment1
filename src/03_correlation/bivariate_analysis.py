@@ -1,13 +1,3 @@
-"""
-Analise bivariada e multivariada alinhada a Lecture 7 (EDA II):
-- Mapeamento de papeis das variaveis (Independent / Dependent / Intervening / Extraneous)
-- Correlacao condicional para demonstrar efeito de variaveis intervenientes
-- Boxplots categorica x continua (engagement por sentimento, por emocao, por fonte)
-
-Estes graficos respondem a pergunta central de Lecture 7:
-*'Two variables correlate - is there a hidden mediator that explains it?'*
-"""
-
 import os
 from pathlib import Path
 import pandas as pd
@@ -15,7 +5,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
 
 pd.options.display.float_format = "{:,.3f}".format
@@ -31,10 +20,6 @@ GREEN  = "#639922"
 PURPLE = "#7F77DD"
 GRAY   = "#888780"
 
-# =========================================================
-# Mapeamento de papeis das variaveis (Lecture 7, slide final)
-# Decisao informada pelo dominio do problema (Stranger Things).
-# =========================================================
 VARIABLE_ROLES = {
     "Independent (drivers)": [
         ("intensity_imputed",        "Intensidade emocional do post"),
@@ -57,23 +42,11 @@ VARIABLE_ROLES = {
     ],
 }
 
-print("=" * 72)
-print("Mapeamento dos papeis das variaveis (Lecture 7)")
-print("=" * 72)
 for role, items in VARIABLE_ROLES.items():
     print(f"\n[{role}]")
     for col, desc in items:
         present = "OK " if col in df.columns else "-- "
         print(f"  {present}{col:<28} {desc}")
-
-# =========================================================
-# Correlacao condicional - demonstracao de variavel interveniente
-# Comparamos: corr(intensity, engagement) GLOBAL vs por grupo de sentimento.
-# Se a correlacao muda por grupo, sentimento media a relacao.
-# =========================================================
-print("\n" + "=" * 72)
-print("Correlacao condicional - efeito de variaveis intervenientes")
-print("=" * 72)
 
 def triple_corr(x, y):
     mask = x.notna() & y.notna()
@@ -105,15 +78,6 @@ conditional_correlation_report("intensity_imputed", "engagement_score_v2", "sent
 conditional_correlation_report("num_theories", "engagement_score_v2", "emotion_group_v2")
 conditional_correlation_report("intensity_imputed", "engagement_score_v2", "_source_file")
 conditional_correlation_report("summary_length", "engagement_score_v2", "sentiment_clean")
-
-# =========================================================
-# Boxplots categorica x continua (Lecture 6+7)
-# Demonstra como uma extraneous/intervening separa a distribuicao
-# da variavel dependente.
-# =========================================================
-print("\n" + "=" * 72)
-print("Boxplots agrupados - distribuicao de engagement por categoria")
-print("=" * 72)
 
 categorical_targets = [
     ("sentiment_clean",   ["positive", "mixed", "negative"], "Sentimento (mediador)"),
@@ -149,7 +113,6 @@ for ax, (cat_col, order, title) in zip(axes, categorical_targets):
     ax.grid(axis="y", color="#e0e0e0", linewidth=0.7, zorder=0)
     ax.set_axisbelow(True)
 
-    # Teste Kruskal-Wallis (nao-parametrico, sem assumir normalidade)
     valid = [d for d in data if len(d) >= 2]
     if len(valid) >= 2:
         H, pval = stats.kruskal(*valid)
@@ -166,12 +129,6 @@ fig.suptitle("Engagement por categoria - distribuicao agrupada (categorica x con
 plt.tight_layout()
 img_path = img_dir / "boxplots_grouped.png"
 plt.savefig(img_path, dpi=150, bbox_inches="tight")
-print(f"\nBoxplots agrupados salvos em: {img_path}")
-
-# =========================================================
-# Scatter condicional - intensity x engagement, colorido por sentiment
-# Visualizacao do efeito mediador (Lecture 7 slide 'Intervening Variables')
-# =========================================================
 fig2, ax = plt.subplots(figsize=(10, 7))
 
 sent_colors = {"positive": GREEN, "negative": RED, "mixed": AMBER}
@@ -191,7 +148,6 @@ for sent, color in sent_colors.items():
         ax.plot(xs, np.poly1d(coef)(xs), color=color, linewidth=1.7,
                 linestyle="--", alpha=0.8, zorder=4)
 
-# tendencia global
 xg = df.loc[mask_all, "intensity_imputed"].values
 yg = df.loc[mask_all, "engagement_score_v2"].values
 coef_g = np.polyfit(xg, yg, 1)
@@ -216,6 +172,4 @@ ax.set_axisbelow(True)
 
 img_path2 = img_dir / "scatter_conditional.png"
 plt.savefig(img_path2, dpi=150, bbox_inches="tight")
-print(f"Scatter condicional salvo em: {img_path2}")
-
 plt.show()

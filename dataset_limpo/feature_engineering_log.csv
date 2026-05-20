@@ -1,0 +1,25 @@
+category,action,target,motivation
+transformation,log1p,num_theories,skew +2.54 (leptokurtic) -> +1.94
+transformation,StandardScaler,"intensity_imputed, summary_length, engagement_score_v2, log_num_theories","escalas diferentes (intensity 0-10, summary_length 0-101); necessario para distance-based (kNN, k-Means, SVM, PCA)"
+transformation,"MinMaxScaler [0,1]","intensity_imputed, engagement_score_v2","redes neurais e algoritmos que esperam input em [0,1]"
+transformation,winsorize p05-p95,summary_length,"limita outliers; range [5, 98]"
+creation,ratio,theory_density,teorias por palavra do resumo - normaliza por tamanho do post
+creation,ratio,theme_diversity,proporcao dos 7 temas canonicos presentes no post
+creation,binary indicator,is_weekend,captura efeito de fim de semana sobre engajamento
+creation,cyclical encoding (sin/cos),published_hour,preserva continuidade circular - hora 23 fica adjacente a hora 0
+creation,cyclical encoding (sin/cos),published_dayofweek,preserva continuidade semanal
+creation,interaction term,intensity_x_themes,efeito combinado de intensidade emocional e riqueza tematica
+encoding,group rare categories,emotion_group_v2,"categorias com n<5 (['humor', 'skepticism']) agrupadas para evitar colunas esparsas no one-hot"
+encoding,one-hot,"sentiment_clean, emotion_grouped, _source_file",variaveis nominais sem ordem natural -> 14 colunas binarias. Ordinal encoding criaria ordem espuria entre categorias.
+encoding,ordinal (pre-existing),emotion_encoded_v2,ranking 0-8 para uso opcional em modelos baseados em arvore
+selection,drop redundant,max_theory_plausibility,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,engagement_score_v2_mm,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,log_num_theories_std,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,intensity_clean,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,intensity_imputed_mm,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,avg_theory_plausibility,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,theme_diversity,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,intensity_imputed_std,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,summary_length,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,engagement_score_v2_std,multicolinearidade |r| >= 0.9 com feature mais informativa
+dimensionality,PCA(3) em 7 temas binarios,theme_*,3 PCs explicam 71.9% da variancia - reduz 7 -> 3 dimensoes mantendo info

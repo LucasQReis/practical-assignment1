@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from scipy import stats as scistats
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")

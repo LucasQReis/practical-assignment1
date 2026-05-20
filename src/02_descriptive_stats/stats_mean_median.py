@@ -1,15 +1,8 @@
-"""
-Step 1 do ciclo EDA: Descriptive Statistics.
-Estende media/mediana com moda, std, skewness e kurtosis (classificada),
-seguindo Lecture 6 (EDA).
-"""
-
 import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
 
 pd.options.display.float_format = "{:,.4f}".format
@@ -50,26 +43,15 @@ grupos = {
     "Engagement": cols_engagement,
 }
 
-# =========================================================
-# describe() global formatado (Lecture 6: float_format ".2f")
-# =========================================================
-print("=" * 70)
-print("describe() - resumo estatistico global")
-print("=" * 70)
 all_numeric = [c for grupo in grupos.values() for c in grupo]
 print(df[all_numeric].describe().T.to_string())
 
-# =========================================================
-# Tendencia central (mean, median, mode) + dispersao (std)
-# + forma (skewness, kurtosis) com classificacao.
-# =========================================================
 def classify_skew(s):
     if s >  0.5: return f"right-skewed ({s:+.2f})"
     if s < -0.5: return f"left-skewed ({s:+.2f})"
     return f"symmetric ({s:+.2f})"
 
 def classify_kurt(k):
-    # pandas .kurt() retorna excesso de kurtosis (Fisher): k_normal = 0
     if k >  0.5: return f"leptokurtic ({k:+.2f})"
     if k < -0.5: return f"platykurtic ({k:+.2f})"
     return f"mesokurtic ({k:+.2f})"
@@ -108,16 +90,6 @@ for grupo in stats_df["grupo"].unique():
     print(subset.to_string(index=False))
 
 stats_df.to_csv("dataset_limpo/stats_mean_median.csv", index=False)
-print(f"\nTabela completa salva em: dataset_limpo/stats_mean_median.csv")
-
-# =========================================================
-# Binning - distribuicao de engagement em intervalos
-# (Lecture 6: 'binning' para variavel continua)
-# =========================================================
-print("\n" + "=" * 70)
-print("Binning - engagement_score_v2 em intervalos")
-print("=" * 70)
-
 bins = [0, 3, 4, 5, 6, 10]
 labels = ["[0-3)", "[3-4)", "[4-5)", "[5-6)", "[6-10]"]
 binned = pd.cut(df["engagement_score_v2"], bins=bins, labels=labels,
@@ -134,4 +106,3 @@ freq_table = pd.DataFrame({
     "Fi acumulada":        Fi,
     "Fri (%) acum.relativa": Fri,
 })
-print(freq_table.to_string())

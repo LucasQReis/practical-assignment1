@@ -1,18 +1,3 @@
-"""
-Inferencia estatistica e formulacao de hipoteses - Lecture 8.
-
-Este script *formula* as hipoteses derivadas dos achados de EDA das
-aulas 6 e 7, sem decidir/aceitar/rejeitar - apenas estrutura o
-arcabouco inferencial conforme a atividade pratica da Lecture 8
-(slides 27-28: 'propose hypotheses, do not compute tests yet').
-
-Saidas:
-- print da estrutura conceitual (populacao, amostra, parametros, estatisticas)
-- tabela hypotheses_table.csv com H0, H1, parametro, teste sugerido
-- plot_image/two_tailed_test.png - diagrama two-tailed (slide 22)
-- plot_image/sample_vs_population.png - amostra como subconjunto (slide 13)
-"""
-
 import os
 from pathlib import Path
 import pandas as pd
@@ -20,23 +5,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats as scistats
 
-# Bootstrap: roda a partir da raiz do projeto independente do cwd
 os.chdir(Path(__file__).resolve().parents[2])
-
 pd.options.display.float_format = "{:,.3f}".format
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")
 out_dir = Path("dataset_limpo")
 img_dir = Path("plot_image")
 img_dir.mkdir(exist_ok=True)
-
-# =========================================================
-# 1. Estrutura conceitual - populacao, amostra, parametro, estatistica
-# (Lecture 8, slides 12-15)
-# =========================================================
-print("=" * 78)
-print("1. ESTRUTURA INFERENCIAL DO ESTUDO (Lecture 8)")
-print("=" * 78)
 
 n_sample = len(df)
 framework = {
@@ -57,9 +32,6 @@ framework = {
 for k, v in framework.items():
     print(f"\n[{k}]\n  {v}")
 
-print("\n" + "=" * 78)
-print("Parametros (populacao) x Estatisticas (amostra)")
-print("=" * 78)
 param_stat = pd.DataFrame([
     {"Conceito": "Media de intensidade",
      "Parametro (pop.)": "mu_intensity",
@@ -84,22 +56,8 @@ param_stat = pd.DataFrame([
          f"x_bar_neg = {df.loc[df['sentiment_clean']=='negative','engagement_score_v2'].mean():.3f}",
      "Tipo de inferencia": "Teste de medias / Kruskal-Wallis"},
 ])
-print(param_stat.to_string(index=False))
 
-# =========================================================
-# 2. Hipoteses formuladas a partir dos achados de EDA
-# Cada hipotese e um par H0/H1 + teste apropriado + Type I/II
-# =========================================================
-print("\n" + "=" * 78)
-print("2. HIPOTESES FORMULADAS (a partir de achados das aulas 6-7)")
-print("=" * 78)
-
-# Achados-chave do EDA para gerar as hipoteses:
-# - aula 6: distribuicoes assimetricas (kurtosis), engagement quase normal
-# - aula 7: r(intensity, engagement) = +0.80 (strong); correlacao condicional
-#           varia por sentimento (intervening variable); Kruskal p<1e-9
 hypotheses = [
-    # --- UNIVARIADAS (distribuicao) - Lecture 8 slide 27 ---
     {
         "id": "H1",
         "categoria": "Univariada (distribuicao)",
@@ -159,8 +117,6 @@ hypotheses = [
             "Nao detectar uma tendencia real de positividade - subestimar a "
             "recepcao do finale.",
     },
-
-    # --- BIVARIADAS (relacao) - Lecture 8 slide 28 ---
     {
         "id": "H4",
         "categoria": "Bivariada (associacao)",
@@ -199,8 +155,6 @@ hypotheses = [
         "Type_II_no_contexto":
             "Nao detectar a relacao real dentro dos grupos - perda de feature interativa.",
     },
-
-    # --- DIFERENCA DE DISTRIBUICAO (Kruskal/ANOVA) ---
     {
         "id": "H6",
         "categoria": "Comparacao de grupos",
@@ -250,7 +204,6 @@ out_csv = out_dir / "hypotheses_table.csv"
 hyp_df.to_csv(out_csv, index=False, encoding="utf-8")
 print(f"\nTabela com {len(hyp_df)} hipoteses salva em: {out_csv}\n")
 
-# Print legivel
 for h in hypotheses:
     print("-" * 78)
     print(f"[{h['id']}] {h['categoria']}  |  variavel(eis): {h['variavel']}")
@@ -262,12 +215,6 @@ for h in hypotheses:
     print(f"  Type I (no contexto):  {h['Type_I_no_contexto']}")
     print(f"  Type II (no contexto): {h['Type_II_no_contexto']}")
 
-# =========================================================
-# 3. Caveats e limitacoes (Lecture 8 slide 25)
-# =========================================================
-print("\n" + "=" * 78)
-print("3. CAVEATS - O QUE OS TESTES NAO DIRAO (Lecture 8 slide 25)")
-print("=" * 78)
 caveats = [
     "Significancia estatistica != relevancia pratica. r=+0.80 com n=187 e "
     "altamente significativo, mas o efeito pratico depende do dominio.",
@@ -283,10 +230,6 @@ caveats = [
 for i, c in enumerate(caveats, 1):
     print(f"  {i}. {c}")
 
-# =========================================================
-# 4. Visualizacao - two-tailed test diagram (slide 22)
-# Conecta valor de teste observado a regiao de decisao.
-# =========================================================
 fig, ax = plt.subplots(figsize=(11, 6))
 
 x = np.linspace(-4, 4, 500)
@@ -307,13 +250,9 @@ ax.axvline(crit_lo, color="#a02020", linewidth=1.4, linestyle="--",
            label=f"Valores criticos +-{abs(crit_lo):.2f}")
 ax.axvline(crit_hi, color="#a02020", linewidth=1.4, linestyle="--")
 
-# Marca estatisticas observadas (para mostrar onde nossos testes cairiam)
-# Aproximamos os Z-equivalentes para alguns testes ja realizados:
-# - r=0.80 com n=187 -> z ~ atanh(r)*sqrt(n-3)
 r_intensity_eng = df["intensity_imputed"].corr(df["engagement_score_v2"])
 z_h4 = np.arctanh(r_intensity_eng) * np.sqrt(n_sample - 3)
 
-# r=0.04 (summary x engagement)
 r_summary_eng = df["summary_length"].corr(df["engagement_score_v2"])
 z_h5 = np.arctanh(r_summary_eng) * np.sqrt(n_sample - 3)
 
@@ -342,17 +281,9 @@ ax.set_ylim(-0.005, 0.45)
 img_path = img_dir / "two_tailed_test.png"
 plt.tight_layout()
 plt.savefig(img_path, dpi=150, bbox_inches="tight")
-print(f"\nDiagrama two-tailed salvo em: {img_path}")
-
-# =========================================================
-# 5. Visualizacao - Population vs Sample (slide 13/15)
-# Mostra schemaicamente como nossa amostra de 187 e subconjunto
-# de uma populacao teorica muito maior.
-# =========================================================
 fig2, (ax_pop, ax_arrow, ax_sample) = plt.subplots(1, 3, figsize=(15, 6),
                                                     gridspec_kw={"width_ratios": [3, 1, 1.5]})
 
-# Populacao teorica (grande nuvem de pontos)
 rng = np.random.default_rng(42)
 n_pop = 5000
 pop_x = rng.normal(0, 1, n_pop)
@@ -366,7 +297,6 @@ for spine in ax_pop.spines.values():
 ax_pop.text(0, -3.2, "Parametros (desconhecidos): μ, σ, ρ, π",
             ha="center", fontsize=9, color="#444", style="italic")
 
-# Seta de amostragem
 ax_arrow.axis("off")
 ax_arrow.annotate("", xy=(0.95, 0.5), xytext=(0.05, 0.5),
                   xycoords="axes fraction",
@@ -376,7 +306,6 @@ ax_arrow.text(0.5, 0.6, "Sampling", ha="center", fontsize=11,
 ax_arrow.text(0.5, 0.4, "(Reddit RSS,\n3 snapshots)", ha="center", fontsize=8,
               color="#666", style="italic")
 
-# Amostra observada (187 pontos)
 sample_idx = rng.choice(n_pop, n_sample, replace=False)
 ax_sample.scatter(pop_x[sample_idx], pop_y[sample_idx],
                   c="#E24B4A", alpha=0.75, s=35, edgecolors="white", linewidths=0.4)
@@ -388,7 +317,6 @@ for spine in ax_sample.spines.values():
 ax_sample.text(0, -3.2, "Estatisticas (calculaveis): x̄, s, r, p̂",
                ha="center", fontsize=9, color="#444", style="italic")
 
-# Seta de volta - inferencia
 fig2.text(0.5, 0.02, "Inferencia estatistica  <---  (de cima: amostragem;  de baixo: generalizacao via H0/H1)",
           ha="center", fontsize=10, color="#a02020", fontweight="bold")
 
@@ -400,17 +328,3 @@ plt.savefig(img_path2, dpi=150, bbox_inches="tight")
 print(f"Diagrama populacao x amostra salvo em: {img_path2}")
 
 plt.show()
-
-print("\n" + "=" * 78)
-print("CONCLUSAO")
-print("=" * 78)
-print(
-    "Foram formuladas {} hipoteses formais (H0 + H1) a partir dos achados de EDA.\n"
-    "Os testes correspondentes nao sao executados aqui - este script implementa a\n"
-    "atividade pratica da Lecture 8 (slides 27-28): 'propose hypotheses, do not\n"
-    "compute tests yet'.\n\n"
-    "Os p-values ja calculados em scatter_correlation.py (Pearson/Spearman/Kendall)\n"
-    "e bivariate_analysis.py (Kruskal-Wallis) servem de base para a proxima etapa:\n"
-    "decisao formal usando alpha=0.05 com correcao para multiplas comparacoes."
-    .format(len(hyp_df))
-)
