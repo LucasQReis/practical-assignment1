@@ -1,9 +1,21 @@
+# =========================================================
+# boxplot.py - Boxplots univariados
+# ---------------------------------------------------------
+# Gera 6 boxplots (intensity, plausibility, num_themes,
+# engagement, summary_length, canonical_themes) destacando
+# mediana, IQR, whiskers (Q1-1.5*IQR a Q3+1.5*IQR), media
+# como linha pontilhada e outliers em vermelho. Cada subplot
+# tem card com media, mediana, skew e contagem de outliers.
+# Saida: plot_image/boxplots.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")

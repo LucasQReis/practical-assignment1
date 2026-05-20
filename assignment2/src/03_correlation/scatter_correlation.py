@@ -1,3 +1,17 @@
+# =========================================================
+# scatter_correlation.py - Analise de correlacao
+# ---------------------------------------------------------
+# Para 6 pares de variaveis-chave:
+#   1. Gera scatter plot colorido por sentimento + linha de
+#      tendencia + outliers (|residuo| > 2 sigma) em losango.
+#   2. Calcula Pearson r, Spearman rho e Kendall tau com
+#      p-values, classifica forca (strong/moderate/weak/none)
+#      e recomenda o coeficiente apropriado.
+#   3. Gera 3 heatmaps lado a lado (Pearson | Spearman |
+#      Kendall) com bordas amarelas para |r| >= 0.7.
+# Saidas: plot_image/scatter_plots.png + heatmap_correlacao.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
@@ -7,6 +21,7 @@ import matplotlib.patches as mpatches
 from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")

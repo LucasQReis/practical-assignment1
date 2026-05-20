@@ -12,14 +12,14 @@ creation,interaction term,intensity_x_themes,efeito combinado de intensidade emo
 encoding,group rare categories,emotion_group_v2,"categorias com n<5 (['humor', 'skepticism']) agrupadas para evitar colunas esparsas no one-hot"
 encoding,one-hot,"sentiment_clean, emotion_grouped, _source_file",variaveis nominais sem ordem natural -> 14 colunas binarias. Ordinal encoding criaria ordem espuria entre categorias.
 encoding,ordinal (pre-existing),emotion_encoded_v2,ranking 0-8 para uso opcional em modelos baseados em arvore
-selection,drop redundant,max_theory_plausibility,multicolinearidade |r| >= 0.9 com feature mais informativa
-selection,drop redundant,engagement_score_v2_mm,multicolinearidade |r| >= 0.9 com feature mais informativa
-selection,drop redundant,log_num_theories_std,multicolinearidade |r| >= 0.9 com feature mais informativa
 selection,drop redundant,intensity_clean,multicolinearidade |r| >= 0.9 com feature mais informativa
-selection,drop redundant,intensity_imputed_mm,multicolinearidade |r| >= 0.9 com feature mais informativa
 selection,drop redundant,avg_theory_plausibility,multicolinearidade |r| >= 0.9 com feature mais informativa
 selection,drop redundant,theme_diversity,multicolinearidade |r| >= 0.9 com feature mais informativa
 selection,drop redundant,intensity_imputed_std,multicolinearidade |r| >= 0.9 com feature mais informativa
-selection,drop redundant,summary_length,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,log_num_theories_std,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,engagement_score_v2_mm,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,max_theory_plausibility,multicolinearidade |r| >= 0.9 com feature mais informativa
 selection,drop redundant,engagement_score_v2_std,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,intensity_imputed_mm,multicolinearidade |r| >= 0.9 com feature mais informativa
+selection,drop redundant,summary_length,multicolinearidade |r| >= 0.9 com feature mais informativa
 dimensionality,PCA(3) em 7 temas binarios,theme_*,3 PCs explicam 71.9% da variancia - reduz 7 -> 3 dimensoes mantendo info

@@ -1,11 +1,25 @@
+# =========================================================
+# data.py - Selecao de colunas finais
+# ---------------------------------------------------------
+# Recebe o cleaned_dataset_enriched.csv (187 x 110) gerado por
+# main.py e mantem apenas as 31 colunas relevantes para as
+# analises seguintes, descartando colunas auxiliares e dados
+# brutos aninhados que ja foram extraidos como features.
+# Saida: dataset_limpo/cleaned_dataset_final.csv (187 x 31).
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_enriched.csv")
 
+# Lista de colunas que sao mantidas: identificadores, texto bruto
+# minimo (para inspecao), features de sentimento/teorias/temas e
+# atributos temporais derivados.
 keep = [
     "discussion_id",
     "title",

@@ -1,8 +1,23 @@
+# =========================================================
+# dataset_impv.py - Imputacao por dominio + otimizacao de memoria
+# ---------------------------------------------------------
+# Recebe cleaned_dataset_final.csv (com NaN em intensity,
+# plausibility, etc.) e aplica:
+#   1. Imputacao por (sentiment, emotion) para intensity_clean
+#      e regras de dominio para plausibilidade e emotion_group.
+#   2. Recalculo do engagement_score_v2 ja sem NaN.
+#   3. Winsorizacao p05-p95 do engagement.
+#   4. Otimizacao de memoria via dtype 'category' + downcast
+#      numerico (~30% reducao de RAM - Step 7 do notebook ANCINE).
+# Saida: dataset_limpo/cleaned_dataset_improved.csv (187 x 43).
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_final.csv")

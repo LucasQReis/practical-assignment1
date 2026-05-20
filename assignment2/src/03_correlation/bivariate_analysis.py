@@ -1,3 +1,20 @@
+# =========================================================
+# bivariate_analysis.py - Analise bivariada
+# ---------------------------------------------------------
+# Investiga o conceito de variavel interveniente (mediador):
+#   1. Mapeamento dos papeis das variaveis no dominio
+#      (Independent/Dependent/Intervening/Extraneous).
+#   2. Correlacoes condicionais - mesmo par X,Y avaliado
+#      globalmente e por grupo de sentimento/emocao/snapshot,
+#      revelando casos de Paradoxo de Simpson.
+#   3. Boxplots agrupados (engagement por sentiment/emocao/
+#      source) + teste Kruskal-Wallis para validar mediadores.
+#   4. Scatter condicional colorido por sentimento + linha de
+#      tendencia global vs por grupo.
+# Saidas: plot_image/boxplots_grouped.png +
+#         plot_image/scatter_conditional.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
@@ -5,6 +22,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 pd.options.display.float_format = "{:,.3f}".format

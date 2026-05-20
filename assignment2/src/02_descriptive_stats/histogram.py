@@ -1,3 +1,16 @@
+# =========================================================
+# histogram.py - Histogramas univariados
+# ---------------------------------------------------------
+# Gera um grid 2x3 com 6 histogramas (intensity, plausibility,
+# num_themes, engagement, summary_length, canonical_themes).
+# Cada subplot mostra:
+#   - barras do histograma
+#   - curva KDE sobreposta (gaussian_kde)
+#   - linhas verticais de media e mediana
+#   - card com std, moda, skew e classificacao de kurtosis
+# Saida: plot_image/histogramas.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
@@ -6,6 +19,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 from scipy import stats as scistats
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 df = pd.read_csv("dataset_limpo/cleaned_dataset_improved.csv")

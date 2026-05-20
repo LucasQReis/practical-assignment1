@@ -1,8 +1,21 @@
+# =========================================================
+# stats_mean_median.py - Estatistica descritiva
+# ---------------------------------------------------------
+# Para 4 grupos de variaveis (Sentimento, Teorias, Temas,
+# Engagement) calcula media, mediana, moda, desvio padrao,
+# skewness e kurtosis (classificadas como simetrico/right/left
+# e mesokurtic/platykurtic/leptokurtic). Tambem aplica binning
+# no engagement_score_v2 para gerar uma distribuicao por
+# intervalos.
+# Saida: dataset_limpo/stats_mean_median.csv.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 pd.options.display.float_format = "{:,.4f}".format

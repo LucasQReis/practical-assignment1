@@ -1,3 +1,25 @@
+# =========================================================
+# feature_engineering.py - Feature engineering
+# ---------------------------------------------------------
+# Aplica as 4 operacoes centrais da Lecture 10 + PCA ao dataset
+# limpo, produzindo a versao ML-ready (187 x 56):
+#   1. TRANSFORMATION: log1p(num_theories) para reduzir skew,
+#      StandardScaler/MinMaxScaler para padronizar escalas,
+#      winsorize p05-p95 para limitar outliers.
+#   2. CREATION: theory_density, theme_diversity (ratios),
+#      is_weekend (binary), hour_sin/cos e dow_sin/cos
+#      (cyclical encoding) e intensity_x_themes (interaction).
+#   3. ENCODING: agrupa emocoes raras (n<5) em 'rare' e aplica
+#      one-hot em sentiment, emotion_grouped, _source_file.
+#   4. SELECTION: drop automatico de pares com |r| >= 0.9,
+#      colunas quase-constantes e strings nao-modelaveis.
+#   5. DIMENSIONALITY: PCA(3) nos 7 temas binarios captura
+#      ~72% da variancia.
+# Saidas: dataset_limpo/cleaned_dataset_ml_ready.csv +
+#         dataset_limpo/feature_engineering_log.csv +
+#         plot_image/feature_transformations.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
@@ -6,6 +28,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.decomposition import PCA
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 pd.options.display.float_format = "{:,.3f}".format

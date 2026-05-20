@@ -1,9 +1,22 @@
+# =========================================================
+# frequency_analysis.py - Tabelas de frequencia
+# ---------------------------------------------------------
+# Calcula fi (absoluta), fri (relativa %), Fi (acumulada) e
+# Fri (acumulada %) para variaveis qualitativas (sentimento,
+# emocao, snapshot, temas binarios) e aplica binning a 3
+# variaveis continuas (engagement, intensity, summary_length)
+# para gerar suas frequencias por intervalo.
+# Saidas: dataset_limpo/frequency_tables.csv +
+#         plot_image/frequency_categorical.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 pd.options.display.float_format = "{:,.2f}".format

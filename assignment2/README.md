@@ -1,69 +1,89 @@
-# Trabalho 1 - Data Science (Optativa I)
+# Assignment 2 - Data Science (Optativa I)
 
-Pipeline completo de EDA + Inferencia Estatistica sobre discussoes do Reddit
-acerca do finale da temporada 5 de **Stranger Things**.
+**Assignment:** Exploratory Data Analysis, Hypothesis Testing, and Feature Engineering Reflection
+**Due date:** May 20, 2026
+**Author:** Lucas Queiroz
 
-Estruturado conforme as aulas 6, 7 e 8 do Prof. Maiko Spiess.
+Pipeline completo de EDA + Inferencia Estatistica + Feature Engineering sobre
+discussoes do Reddit acerca do finale da temporada 5 de **Stranger Things**.
+
+Estruturado conforme as aulas 6, 7, 8 e 10 do Prof. Maiko Spiess.
 
 ---
 
-## Estrutura do repositorio
+## Mapeamento com a rubrica
+
+| Criterio | Onde foi atendido |
+|---|---|
+| Organization and documentation | Estrutura `src/01-05` numerada + docstrings + este README |
+| Descriptive statistics | `src/02_descriptive_stats/stats_mean_median.py` (mean/median/mode/std/skew/kurt) |
+| Distribution and dispersion analysis | `src/02_descriptive_stats/histogram.py`, `boxplot.py`, `frequency_analysis.py` |
+| Correlation analysis | `src/03_correlation/scatter_correlation.py`, `bivariate_analysis.py` (Pearson + Spearman + Kendall + heatmap 3x + condicional) |
+| Hypothesis testing | `src/04_hypothesis/hypotheses.py` (formulacao) + `hypothesis_tests.py` (execucao + Bonferroni) |
+| Interpretation of results | Outputs printados + comentarios + paragrafo do checklist |
+| Feature engineering checklist | `feature_engineering_checklist.docx` |
+| Technical correctness | Pipeline roda end-to-end de qualquer cwd (bootstrap em todos os scripts) |
+
+---
+
+## Estrutura do diretorio
 
 ```
-.
-|-- dataset/                     # Dados brutos (3 snapshots Reddit RSS em JSON)
-|-- dataset_limpo/               # CSVs gerados pelos scripts
-|-- plot_image/                  # Visualizacoes (.png)
-|-- src/
-|   |-- 01_pipeline/             # Lecture 6: ingestao + limpeza + Steps 1-7
-|   |   |-- main.py              #   Steps 1-6: consolidacao, parsing, sparsity, info()
-|   |   |-- data.py              #   Selecao de colunas finais
-|   |   `-- dataset_impv.py      #   Imputacao + otimizacao de memoria (Step 7)
-|   |-- 02_descriptive_stats/    # Lecture 6: estatistica descritiva
-|   |   |-- stats_mean_median.py #   describe, moda, std, skewness, kurtosis
-|   |   |-- frequency_analysis.py#   fi, fri%, Fi, Fri% + binning
-|   |   |-- histogram.py         #   histogramas com KDE, media, mediana
-|   |   `-- boxplot.py           #   boxplots com IQR e outliers
-|   |-- 03_correlation/          # Lecture 7: analise bivariada/multivariada
-|   |   |-- scatter_correlation.py # Pearson + Spearman + Kendall + heatmap 3x
-|   |   `-- bivariate_analysis.py  # Papeis das variaveis + correlacao condicional
-|   |-- 04_hypothesis/           # Lecture 8: inferencia e hipoteses
-|   |   |-- hypotheses.py        #   Formulacao H0/H1 + framework inferencial
-|   |   `-- hypothesis_tests.py  #   Execucao: Shapiro, Welch, ANOVA, chi-square...
-|   `-- 05_feature_engineering/  # Lecture 10: feature engineering
-|       `-- feature_engineering.py  # 4 operacoes: transformacao, criacao, encoding, selecao
-|-- feature_engineering_checklist.md  # Checklist preenchido (Lecture 10 exercise)
-|-- relatorio_trabalho1.docx     # Relatorio final
-`-- trabalho 1 - Lucas Queiroz.xlsx
+assignment2/
+|-- README.md                          # este arquivo
+|-- feature_engineering_checklist.md   # checklist preenchido (markdown)
+|-- feature_engineering_checklist.docx # checklist preenchido (word)
+|-- dataset/                           # dados brutos (3 snapshots Reddit RSS em JSON)
+|-- dataset_limpo/                     # CSVs gerados pelos scripts
+|-- plot_image/                        # visualizacoes (.png)
+`-- src/
+    |-- 01_pipeline/                   # Lecture 6: ingestao + limpeza + Steps 1-7
+    |   |-- main.py                    #   Steps 1-6: consolidacao, parsing, sparsity, info()
+    |   |-- data.py                    #   Selecao de colunas finais
+    |   `-- dataset_impv.py            #   Imputacao + otimizacao de memoria (Step 7)
+    |-- 02_descriptive_stats/          # Lecture 6: estatistica descritiva
+    |   |-- stats_mean_median.py       #   describe, moda, std, skewness, kurtosis
+    |   |-- frequency_analysis.py      #   fi, fri%, Fi, Fri% + binning
+    |   |-- histogram.py               #   histogramas com KDE, media, mediana
+    |   `-- boxplot.py                 #   boxplots com IQR e outliers
+    |-- 03_correlation/                # Lecture 7: analise bivariada/multivariada
+    |   |-- scatter_correlation.py     #   Pearson + Spearman + Kendall + heatmap 3x
+    |   `-- bivariate_analysis.py      #   Papeis das variaveis + correlacao condicional
+    |-- 04_hypothesis/                 # Lecture 8: inferencia e hipoteses
+    |   |-- hypotheses.py              #   Formulacao H0/H1 + framework inferencial
+    |   `-- hypothesis_tests.py        #   Execucao: Shapiro, Welch, ANOVA, chi-square...
+    `-- 05_feature_engineering/        # Lecture 10: feature engineering
+        `-- feature_engineering.py     #   4 operacoes + PCA
 ```
 
 ## Como executar
 
-Os scripts usam bootstrap interno (`os.chdir` para a raiz do projeto),
-entao **funcionam a partir de qualquer diretorio**. Ordem recomendada:
+Os scripts usam bootstrap interno (`os.chdir` para a raiz do `assignment2/`),
+entao **funcionam a partir de qualquer diretorio**. Ordem recomendada
+(rodar a partir da raiz do projeto):
 
 ```bash
-# 1. Preparacao de dados
-python src/01_pipeline/main.py
-python src/01_pipeline/data.py
-python src/01_pipeline/dataset_impv.py
+# 1. Preparacao de dados (Lecture 6)
+python assignment2/src/01_pipeline/main.py
+python assignment2/src/01_pipeline/data.py
+python assignment2/src/01_pipeline/dataset_impv.py
 
-# 2. Estatistica descritiva
-python src/02_descriptive_stats/stats_mean_median.py
-python src/02_descriptive_stats/frequency_analysis.py
-python src/02_descriptive_stats/histogram.py
-python src/02_descriptive_stats/boxplot.py
+# 2. Estatistica descritiva (Lecture 6)
+python assignment2/src/02_descriptive_stats/stats_mean_median.py
+python assignment2/src/02_descriptive_stats/frequency_analysis.py
+python assignment2/src/02_descriptive_stats/histogram.py
+python assignment2/src/02_descriptive_stats/boxplot.py
 
-# 3. Analise de correlacao
-python src/03_correlation/scatter_correlation.py
-python src/03_correlation/bivariate_analysis.py
+# 3. Analise de correlacao (Lecture 7)
+python assignment2/src/03_correlation/scatter_correlation.py
+python assignment2/src/03_correlation/bivariate_analysis.py
 
-# 4. Inferencia
-python src/04_hypothesis/hypotheses.py
-python src/04_hypothesis/hypothesis_tests.py
+# 4. Inferencia (Lecture 8)
+python assignment2/src/04_hypothesis/hypotheses.py
+python assignment2/src/04_hypothesis/hypothesis_tests.py
 
 # 5. Feature engineering (Lecture 10)
-python src/05_feature_engineering/feature_engineering.py
+python assignment2/src/05_feature_engineering/feature_engineering.py
 ```
 
 ## Dependencias

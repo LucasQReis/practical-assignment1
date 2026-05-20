@@ -1,3 +1,21 @@
+# =========================================================
+# hypotheses.py - Formulacao de hipoteses
+# ---------------------------------------------------------
+# Implementa a atividade pratica da Lecture 8 ("propose
+# hypotheses, do not compute tests yet"). Estrutura:
+#   1. Arcabouco inferencial: populacao alvo, amostra,
+#      parametros (mu, sigma, rho, pi) vs estatisticas (x_bar,
+#      s, r, p_hat) - com valores reais do dataset.
+#   2. Sete hipoteses formais H0/H1 derivadas dos achados de
+#      EDA, com teste apropriado e implicacoes de Type I/II.
+#   3. Caveats: significancia != relevancia pratica;
+#      Bonferroni para multiplas comparacoes.
+#   4. Diagramas: two-tailed test + populacao x amostra.
+# Saidas: dataset_limpo/hypotheses_table.csv +
+#         plot_image/two_tailed_test.png +
+#         plot_image/sample_vs_population.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
@@ -5,6 +23,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats as scistats
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 pd.options.display.float_format = "{:,.3f}".format
 

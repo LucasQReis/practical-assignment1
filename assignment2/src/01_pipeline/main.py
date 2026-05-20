@@ -1,9 +1,22 @@
+# =========================================================
+# main.py - Pipeline de preparacao de dados
+# ---------------------------------------------------------
+# Le os 3 snapshots JSON (day1, day3, week1), consolida em um
+# unico DataFrame, deduplica por URL, parseia datas, diagnostica
+# valores faltantes e gera o dataset enriquecido com features
+# derivadas (sentimento, intensidade, emocao, teorias, temas,
+# tempos relativos, comprimentos de texto e engagement_score).
+# Saida: dataset_limpo/cleaned_dataset_enriched.csv (187 x 110).
+# =========================================================
+
 import os
 import json
 import re
 import pandas as pd
 from pathlib import Path
 
+# Bootstrap: garante cwd na raiz de assignment2/ independente
+# de onde o script foi chamado.
 os.chdir(Path(__file__).resolve().parents[2])
 
 dataset_dir = Path("dataset")

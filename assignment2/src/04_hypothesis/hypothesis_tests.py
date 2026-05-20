@@ -1,3 +1,22 @@
+# =========================================================
+# hypothesis_tests.py - Execucao formal das hipoteses
+# ---------------------------------------------------------
+# Executa os testes correspondentes as 7 hipoteses formuladas
+# em hypotheses.py, espelhando a pedagogia do notebook do
+# professor adaptada ao dominio Stranger Things:
+#   1. dispersion_summary (12 medidas incluindo CV).
+#   2. Normalidade: Shapiro-Wilk + QQ-plots.
+#   3. Proporcao: chi-square goodness-of-fit (sentiment ~ 1/3).
+#   4. Correlacao: Pearson, Spearman, Kendall com p-values.
+#   5. 2 grupos: Welch t-test + Mann-Whitney + Cohen's d.
+#   6. k grupos: ANOVA + Kruskal-Wallis + eta squared.
+#   7. Independencia categorica: chi-square + Cramer's V.
+#   8. Correcao Bonferroni alpha/k + tabela final de decisoes.
+# Saidas: dataset_limpo/hypothesis_tests_results.csv +
+#         plot_image/qqplots_normality.png +
+#         plot_image/hypothesis_tests_summary.png.
+# =========================================================
+
 import os
 from pathlib import Path
 import pandas as pd
@@ -5,6 +24,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import stats
 
+# Bootstrap: cwd para a raiz de assignment2/.
 os.chdir(Path(__file__).resolve().parents[2])
 
 pd.options.display.float_format = "{:,.4f}".format
