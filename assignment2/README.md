@@ -7,8 +7,6 @@
 Pipeline completo de EDA + Inferencia Estatistica + Feature Engineering sobre
 discussoes do Reddit acerca do finale da temporada 5 de **Stranger Things**.
 
-Estruturado conforme as aulas 6, 7, 8 e 10 do Prof. Maiko Spiess.
-
 ---
 
 ## Mapeamento com a rubrica
